@@ -4,6 +4,9 @@ import sys
 import os, os.path
 import pandas as pd
 import numpy as np
+
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 period_rng = (50, 300)
