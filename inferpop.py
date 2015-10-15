@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+period_rng = (50, 300)
+rp_rng = (0.75, 20)
+
 # Read synthetic catalog
 koi_file = sys.argv[1]
 
@@ -22,7 +25,6 @@ comp = d['comp']
 period_grid = d['period_grid']
 rp_grid = d['rp_grid']
 comp_inds = d['inds']  #indices of stellar table used
-
 
 # A double power law model for the population.
 def population_model(theta, period, rp):
@@ -64,7 +66,10 @@ def nll(theta):
 
 
 
-# Run the chain
+# Optimize, and then run the chain
+from scipy.optimize import minimize
+theta_0 = np.array([-0.3, -1.5, -0.8])
+r = minimize(nll, theta_0, method="L-BFGS-B", bounds=bounds)
 
 import emcee
 
@@ -87,5 +92,5 @@ corner.corner(sampler.flatchain, labels=[r"$\ln F$", r"$\beta$", r"$\alpha$"],
 filebase = os.path.splitext(koi_file)[0]
 plt.savefig('{}_corner.png'.format(filebase))
                 
-np.save(os.path.join(folder, 'chains.npy'), sampler.flatchain)
+np.save('{}_chains.npy'.format(filebase), sampler.flatchain)
 

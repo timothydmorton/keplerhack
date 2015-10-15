@@ -6,12 +6,13 @@ dar = Dartmouth_Isochrone()
 from scipy.stats import poisson, powerlaw
 import pandas as pd
 import numpy as np
-
+import logging
 
 #Get useful functions from Dan's code:
 from utils import get_duration, get_a, get_delta
 from utils import get_mes, get_pdet, get_pwin
 from utils import get_pgeom, get_completeness
+from utils import stlr
 
 R_EARTH = 0.009171 #in solar units
 
@@ -207,7 +208,6 @@ if __name__=='__main__':
 
     import pandas as pd
     import os, sys, shutil
-    from utils import stlr
 
     folder = sys.argv[1]
     if os.path.exists(folder):
@@ -215,7 +215,7 @@ if __name__=='__main__':
     os.makedirs(folder)
 
     #Write indices of q1_q17_dr24_stellar table to folder:
-    stlr.index.to_hdf(os.path.join(folder, 'inds.h5'), 'inds')
+    pd.Series(stlr.index).to_hdf(os.path.join(folder, 'inds.h5'), 'inds')
     
     #generate population with no binaries
     theta = [-0.3, -1.5, -0.8, 0.0, 0.3]
@@ -228,7 +228,7 @@ if __name__=='__main__':
     theta = [-0.3, -1.5, -0.8, 0.5, 0.3]
     df = generate_planets(theta, stlr)
     filename = os.path.join(folder, 'synthetic_kois_binaries.h5')
-    df.to_hdf(filename, 'df')
+    df.to_hdf(filename, 'kois')
     pd.Series(theta).to_hdf(filename, 'theta')
 
     
