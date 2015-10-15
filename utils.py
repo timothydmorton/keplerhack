@@ -26,6 +26,25 @@ def get_catalog(name, basepath="data"):
 
 stlr = get_catalog('q1_q17_dr24_stellar')
 
+# Do the same cuts as the Burke (2015) paper
+
+# Select G and K dwarfs.
+m = (4200 <= stlr.teff) & (stlr.teff <= 6100)
+m &= stlr.radius <= 1.15
+
+# Only include stars with sufficient data coverage.
+m &= stlr.dataspan > 365.25*2.
+m &= stlr.dutycycle > 0.6
+m &= stlr.rrmscdpp07p5 <= 1000.
+
+# Only select stars with mass estimates.
+m &= np.isfinite(stlr.mass)
+
+base_stlr = pd.DataFrame(stlr)
+stlr = pd.DataFrame(stlr[m])
+
+print("Selected {0} targets after cuts".format(len(stlr)))
+
 def get_duration(period, aor, e):
     """
     Equation (1) from Burke et al. This estimates the transit
