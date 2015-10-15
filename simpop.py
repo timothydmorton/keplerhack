@@ -205,16 +205,31 @@ def generate_planets(theta, stars=stlr, mes_threshold=10):
 
 if __name__=='__main__':
 
+    import pandas as pd
+    import os, sys, shutil
     from utils import stlr
+
+    folder = sys.argv[1]
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+    os.makedirs(folder)
+
+    #Write indices of q1_q17_dr24_stellar table to folder:
+    stlr.index.to_hdf(os.path.join(folder, 'inds.h5'), 'inds')
     
     #generate population with no binaries
     theta = [-0.3, -1.5, -0.8, 0.0, 0.3]
     df = generate_planets(theta, stlr)
-    df.to_hdf('synthetic_kois_single.h5','df')
-
+    filename = os.path.join(folder, 'synthetic_kois_single.h5')
+    df.to_hdf(filename, 'kois')
+    pd.Series(theta).to_hdf(filename, 'theta')
+    
     #generate population with binaries
     theta = [-0.3, -1.5, -0.8, 0.5, 0.3]
     df = generate_planets(theta, stlr)
-    df.to_hdf('synthetic_kois_binaries.h5','df')
+    filename = os.path.join(folder, 'synthetic_kois_binaries.h5')
+    df.to_hdf(filename, 'df')
+    pd.Series(theta).to_hdf(filename, 'theta')
 
+    
     
